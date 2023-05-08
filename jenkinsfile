@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+    tools {
+    maven 'maven prac'
+    
+     'hudson.plugins.sonar.SonarRunnerInstallation' 'sonarqube installation'
+  }
+  stages {
+   stage('git version check') {
+    steps {
+      sh 'git --version'
+    }
+  }
+
+  stage('marven version check') {
+    steps {
+      sh 'mvn --version'
+    }
+  }
+  stage('git checkout stage'){
+      steps {
+        git 'https://github.com/Divyabd/Jenkins-Full-Course-on-aws-Linux.git'  
+      }
+    }
+    
+    stage ('maven package'){
+        steps {
+            sh 'mvn -f Maven/pom.xml clean package'
+        }
+    }
+    stage ('sonarqube connection') {
+        steps {
+            withSonarQubeEnv(installationName:'sonar2',credentialsId: '643019f1-337f-4140-85a3-ebb52048f13d') {
+          sh 'mvn -f Maven/pom.xml clean package sonar:sonar'// some block
+           }
+        }
+    }
+  
+  }
+}
